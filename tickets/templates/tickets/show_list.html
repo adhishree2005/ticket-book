@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Shows{% endblock %}
+{% block content %}
+<h1 class="text-center mb-4">🎭 Upcoming Shows</h1>
+<div class="row g-4">
+    {% for show in shows %}
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ show.title }}</h5>
+                <p class="card-text">
+                    <strong>Date:</strong> {{ show.date|date:"M d, Y H:i" }}<br>
+                    <strong>Venue:</strong> {{ show.venue }}<br>
+                    <strong>Seats Left:</strong> {{ show.available_seats }}
+                </p>
+                <a href="{% url 'tickets:show_detail' show.pk %}" class="btn btn-primary w-100">View Details</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
