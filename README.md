@@ -45,5 +45,5 @@ This application allows users to register, log in, browse books, view book detai
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/shiledae2005/project_book_store.git
+git clone https://github.com/adhishree2005/ticket-book.git
 cd book_cart-main
