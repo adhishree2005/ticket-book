@@ -1,14 +1,42 @@
-{% extends 'base.html' %}
-{% block title %}Register{% endblock %}
-{% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-5">
-        <h2 class="text-center mb-4">Register to Ticketify</h2>
-        <form method="post" class="card p-4 shadow-sm">
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <style>
+        body { font-family: Arial; background: #f9f9f9; padding: 40px; }
+        .form-container {
+            width: 350px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px #ccc;
+        }
+        input, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
+        button { background: #28a745; color: white; border: none; cursor: pointer; }
+        button:hover { background: #218838; }
+        .messages { color: red; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Create an Account</h2>
+        <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary w-100">Register</button>
+            <label>Username</label>
+            <input type="text" name="username" placeholder="Choose a username" required>
+
+            <label>Email</label>
+            <input type="email" name="email" placeholder="Enter your email" required>
+
+            <label>Password</label>
+            <input type="password" name="password" placeholder="Create a password" required>
+
+            <label>Phone Number</label>
+            <input type="text" name="phone_number" placeholder="Optional">
+
+            <button type="submit">Register</button>
         </form>
+        {% for message in messages %}
+        <div class="messages">{{ message }}</div>
+        {% endfor %}
+        <p>Already have an account? <a href="{% url 'accounts:login' %}">Login</a>
+            Login</a></p>
     </div>
-</div>
-{% endblock %}
+</body>
+</html>

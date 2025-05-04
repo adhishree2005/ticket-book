@@ -1,51 +1,68 @@
-from django.views.generic import FormView, View, CreateView  # Added CreateView here
+from django.views import View
 from django.contrib.auth import authenticate, login, logout
-from django.urls import reverse_lazy
-from django import forms
+from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.urls import reverse_lazy
 from .models import CustomUser
-from django.shortcuts import redirect
 
-# Custom Login Form
-class LoginForm(forms.Form):
-    username = forms.CharField()
-    password = forms.CharField(widget=forms.PasswordInput)
 
-# Login View
-class LoginView(FormView):
+class LoginView(View):
     template_name = 'accounts/login.html'
-    form_class = LoginForm
-    success_url = reverse_lazy('home')  # Adjust the success URL to where you want to redirect after login.
 
-    def form_valid(self, form):
-        username = form.cleaned_data['username']
-        password = form.cleaned_data['password']
-        user = authenticate(self.request, username=username, password=password)
-        
+    def get(self, request):
+        return render(request, self.template_name)
+
+    def post(self, request):
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        if not username or not password:
+            messages.error(request, 'Username and password are required.')
+            return render(request, self.template_name)
+
+        user = authenticate(request, username=username, password=password)
         if user is not None:
-            login(self.request, user)  # Log the user in
-            return super().form_valid(form)  # Redirect to success URL
+            login(request, user)
+            return redirect('home')
         else:
-            messages.error(self.request, 'Invalid username or password')
-            return self.form_invalid(form)  # Return to the form with an error message
+            messages.error(request, 'Invalid credentials.')
+            return render(request, self.template_name)
 
-# Register View
-class RegisterView(CreateView):
-    model = CustomUser
+
+class RegisterView(View):
     template_name = 'accounts/register.html'
-    fields = ['username', 'email', 'password', 'phone_number']
-    success_url = reverse_lazy('login')  # Redirect to login after successful registration
 
-    def form_valid(self, form):
-        user = form.save(commit=False)
-        user.set_password(form.cleaned_data['password'])  # Ensure password is hashed
+    def get(self, request):
+        return render(request, self.template_name)
+
+    def post(self, request):
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        phone_number = request.POST.get('phone_number')
+
+        if not username or not email or not password:
+            messages.error(request, 'All fields are required.')
+            return render(request, self.template_name)
+
+        if CustomUser.objects.filter(username=username).exists():
+            messages.error(request, 'Username already exists.')
+            return render(request, self.template_name)
+
+        user = CustomUser.objects.create(
+            username=username,
+            email=email,
+            phone_number=phone_number
+        )
+        user.set_password(password)
         user.save()
-        messages.success(self.request, 'Registration successful. Please login.')
-        return super().form_valid(form)
 
-# Logout View
+        messages.success(request, 'Registration successful. Please login.')
+        return redirect(reverse_lazy('login'))
+
+
 class LogoutView(View):
     def get(self, request, *args, **kwargs):
-        logout(request)  # Logs the user out
+        logout(request)
         messages.success(request, 'You have been successfully logged out.')
-        return redirect(reverse_lazy('login'))  # Redirect to login page after logout
+        return redirect(reverse_lazy('login'))

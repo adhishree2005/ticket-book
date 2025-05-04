@@ -21,7 +21,7 @@
                 <button class="btn btn-secondary" disabled>Sold Out</button>
             {% endif %}
         {% else %}
-            <a href="{% url 'login' %}?next={% url 'show_detail' show.pk %}" class="btn btn-primary">Login to Book</a>
+            <a href="{% url 'accounts:login' %}?next={% url 'show_detail' show.pk %}" class="btn btn-primary">Login to Book</a>
         {% endif %}
     </div>
 </div>
